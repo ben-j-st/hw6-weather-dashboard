@@ -19,6 +19,7 @@
         <nav class="navbar">
             <!-- header goes in here -->
             <h1>Weather Wizard</h1>
+            <h5 class="text hide" id="warning">Please enter City Name</h5>
         </nav>
     </header>
 
@@ -27,44 +28,28 @@
         <div class="row">
             <aside class="col-4" id="side-bar">   
                 <h5>Search for a City: </h5>
-                <input type=text id="city-search"></input>
+                <input type=text id="city-search" placeholder="Enter City Name"></input>
                 <button id="search-btn">
                     <i class="fa fa-search"></i>
                 </button> 
+                <section id="search-container">
+                    <!-- search contents go here -->
+                </section>
+                <button id="clearBtn">
+                    Clear Searches
+                </button>
             </aside>
 
             <!-- main area -->
             <section class=" col-8">
                 <section id="main-weather">
                     <!-- Main Forecast -->
-                    <h3 id="city-name"> Test City Name:</h3>
-                    <p id="temp">Test Temp :</p>
-                    <p id="humidity">Test Humidity: </p>
-                    <p id="us-index">Test UV Index: </p>
-
+                   
                 </section>
-                <section id="five-day">
-                    
-                    <!-- 5 Day Forcast -->
-                    <h3>Five Day Forecast: </h3>
 
-                    <div class="row">
-                        <div class="col-2" id="day-1">
-                            <h5>Stuff 1:</h5>
-                        </div>
-                        <div class="col-2" id="day-2">
-                            <h5>Stuff 2:</h5>
-                        </div>
-                        <div class="col-2" id="day-3">
-                            <h5>Stuff 3:</h5>
-                        </div>
-                        <div class="col-2" id="day-4">
-                            <h5>Stuff 4:</h5>
-                        </div>
-                        <div class="col-2" id="day-5">
-                            <h5>Stuff 5:</h5>
-                        </div>
-                    </div>
+                <section id="five-day">
+                   
+
                 </section>
             </section>
         </div>
