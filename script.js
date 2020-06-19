@@ -1,5 +1,13 @@
 $(document).ready(function() {
 
+    // global variable 
+    var apiKey = "4ba5d08bcf1bec42005bd0e793d11aac";
+
+    var month = moment().format('MMMM Do');
+    // var dayNum = parseInt(moment().format('D'));
+    // console.log(dayNum);
+    
+
     var warningFunction = function() {
         // flash right/wrong feedback on page for half a second
         var $warning = $("#warning")
@@ -13,6 +21,8 @@ $(document).ready(function() {
     // function for storing how to creat and populate search container 
     var createSearch = function() {
 
+        
+        
          // variable for storing the value of the second, second value for trimming.
         var $citySearch = $("#city-search"); 
         var trimSearch = $citySearch.val().trim()
@@ -21,6 +31,11 @@ $(document).ready(function() {
             warningFunction();
             return
         } else {
+
+
+        //clear main weather and 5 day forecast
+        $("#main-weather").empty();
+        $("#five-day").empty();
 
         // $citySearch = $("#city-search"); 
         // trimSearch = $citySearch.val().trim()
@@ -59,7 +74,7 @@ $(document).ready(function() {
         // variable for storing the value and trimming it.
         var $city = $("#city-search").val().trim()
         
-        var apiKey = "4ba5d08bcf1bec42005bd0e793d11aac";
+      
         var queryURL = "https://api.openweathermap.org/data/2.5/weather?q="  + $city + "&units=metric&appid=" + apiKey;
         
         // ajax query
@@ -71,7 +86,11 @@ $(document).ready(function() {
             
 
             //calling function to create fields for data
-            mainWeatherDisplay(response)
+            mainWeatherDisplay(response);
+            
+            // function for making a second call to ajax to get day forecast using lat and lon from first ajax call
+            fiveDayDisplay(response);
+
 
         })
 
@@ -87,7 +106,7 @@ $(document).ready(function() {
     }
 
     var mainWeatherDisplay = function(response) {
-        console.log(response)
+        // console.log(response)
 
         var cityName = response.name;
         var temp = response.main.temp;
@@ -101,7 +120,7 @@ $(document).ready(function() {
         // <p id="us-index">Test UV Index: </p>
         var $cityName = $("<h3>", {
             id: "city-name",
-            text: "City Name: " + cityName + ", " + country 
+            text: "City: " + cityName + ", " + country + " - " + month 
         })
 
         var $temp = $("<p>", {
@@ -111,7 +130,7 @@ $(document).ready(function() {
 
         var $humidity = $("<p>", {
             id: "humidity",
-            text: "Humidity: " + humidity,
+            text: "Humidity: " + humidity + "%",
         })
 
         $("#main-weather").append($cityName, $temp, $humidity);
@@ -138,9 +157,67 @@ $(document).ready(function() {
         
     }
 
-    var fiveDayDisplay = function() {
+    var fiveDayDisplay = function(response) {
+
+        // gets lat and lon from response(first ajax call via city name)
+        var lat = response.coord.lat;
+        var lon = response.coord.lon;
+
+        var fiveDayURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat +"&lon=" + lon + "&exclude=current,minutely,hourly&units=metric&appid=" + apiKey;
+        
+
+        $.ajax({
+            url: fiveDayURL,
+            method: "GET"
+        }).then(function(response) {
+            console.log("this is fivedayURL response");
+            console.log(response);
+
+            // create variable for uvi index
+            var $uvi = $("<p>", {
+                id: "uvi-index",
+                text: "UVI: " + response.daily[0].uvi
+            })
+    
+            $("#main-weather").append($uvi)
 
 
+            
+            var dailyArray = response.daily;
+            $("#five-day").append($("<h3>", {
+                text: "5-Day Forecast"
+            }))
+            var $newRow = $("<div>", {
+                class: "row",
+                id: "five-day-row",
+            }) 
+            $("#five-day").append($newRow)
+
+            for (var i =0; i < 5; i++) {
+                var changingDay = moment().add((i+1),"days").format('MMMM Do')
+                console.log(changingDay)
+                var $newDiv = $("<div>", {
+                    class: "col-2",
+                    id: "day-" + (i+1)
+                })
+
+                var $heading = $("<h5>", {
+                    text: changingDay,
+                })
+
+                var $dayTemp = $("<p>", {
+                    html: "Temprature: " + dailyArray[(i+1)].temp.day +  '&#8451;',
+                }) 
+
+                var $dayHum = $("<p>", {
+                    text: "Humidity: "+ dailyArray[(i+1)].humidity + "%",
+                })
+
+                $newRow.append($newDiv)
+                $newDiv.append($heading, $dayTemp, $dayHum)
+            }
+           
+        })
 
         //  recreate this  
         // <!-- 5 Day Forcast -->
