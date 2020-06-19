@@ -12,12 +12,8 @@ h3 {
     background-color: #F5F5F5;
 }
 
-#main-weather {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 10px;
-    border: solid 1px black;
-    border-radius: 5px;
+.hide {
+    display:none;
 }
 
 #city-name {
@@ -36,4 +32,13 @@ h3 {
     border: solid black 1px;
     border-radius: 5px;
     height: 150px;
+}
+
+#search-container {
+    margin-top: 20px;
+}
+
+#clearBtn {
+    margin-top: 20px;
+    text-align: center;
 }
