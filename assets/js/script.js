@@ -109,7 +109,8 @@ $(document).ready(function() {
     }
 
     var displayGif = function() {
-        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + gifWeather + "&api_key=dc6zaTOxFJmzC&";
+        var apiKey = "haa5BIHFqA1db5u0Jt43swEV7nrNwjrc"
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + gifWeather + "&api_key="+ apiKey;
 
         $.ajax({
             url: queryURL,
