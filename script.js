@@ -2,11 +2,18 @@ $(document).ready(function() {
 
     // global variable 
     var apiKey = "4ba5d08bcf1bec42005bd0e793d11aac";
+    var $redoSearch = "";
+    var gifWeather = "";
+    var gifURL = "";
+
+    //variable for storing Search History
+    var lastCitySearched = "";
 
     var month = moment().format('MMMM Do');
     // var dayNum = parseInt(moment().format('D'));
     // console.log(dayNum);
     
+   
 
     var warningFunction = function() {
         // flash right/wrong feedback on page for half a second
@@ -39,7 +46,7 @@ $(document).ready(function() {
 
         // $citySearch = $("#city-search"); 
         // trimSearch = $citySearch.val().trim()
-        console.log(trimSearch)
+        // console.log(trimSearch)
     
         // create a new div and fill it with text from search
         var $newDiv = $("<div>", {
@@ -49,7 +56,7 @@ $(document).ready(function() {
     
         // newdiv css
         $($newDiv).css({
-            border: "black solid 1px",
+            border: "white solid 1px",
             padding: "10px",
         })
     
@@ -69,12 +76,15 @@ $(document).ready(function() {
     }
 
     var searchWeather = function() {
-        console.log("Search function was run");
 
         // variable for storing the value and trimming it.
         var $city = $("#city-search").val().trim()
         
-      
+        // used to make lastCitySearched equal to watcher was last searched
+        lastCitySearched = $city;
+        // save lastCitySearched to local storage
+        saveSearchFunction()
+
         var queryURL = "https://api.openweathermap.org/data/2.5/weather?q="  + $city + "&units=metric&appid=" + apiKey;
         
         // ajax query
@@ -82,9 +92,11 @@ $(document).ready(function() {
             url: queryURL,
             method: "GET",
         }).then(function(response){
+            console.log(response)
             
-            
+            gifWeather = response.weather[0].main
 
+            displayGif();
             //calling function to create fields for data
             mainWeatherDisplay(response);
             
@@ -93,6 +105,57 @@ $(document).ready(function() {
 
 
         })
+        
+    }
+
+    var displayGif = function() {
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + gifWeather + "&api_key=dc6zaTOxFJmzC&";
+
+        $.ajax({
+            url: queryURL,
+            method: "GET",
+        }).then(function(response){
+            console.log(response)
+            
+            gifURL = response.data[0].images.fixed_height.url;
+
+            console.log(gifURL)
+
+            var $img = $("<img>", {
+                id: "weather-gif",
+                height: "180px",
+                width: "180px;",
+                src: gifURL,
+            })
+            
+            $("#main-weather").append($img)
+        });
+    }
+
+    var previousSearchWeather = function() {
+
+        //clear main weather and 5 day forecast
+        $("#main-weather").empty();
+        $("#five-day").empty();
+ 
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q="  + $redoSearch + "&units=metric&appid=" + apiKey;
+        
+        // ajax query
+        $.ajax({
+            url: queryURL,
+            method: "GET",
+        }).then(function(response){
+            
+            displayGif()
+
+            //calling function to create fields for data
+            mainWeatherDisplay(response);
+            
+            // function for making a second call to ajax to get day forecast using lat and lon from first ajax call
+            fiveDayDisplay(response);
+
+            
+        })
 
         // used to empty the field after input 
         
@@ -100,24 +163,30 @@ $(document).ready(function() {
 
     var checkForEnter = function() {
         if ( event.key === "Enter") {
-            console.log("enter was pressed")
             createSearch()
         }
     }
 
     var mainWeatherDisplay = function(response) {
-        // console.log(response)
-
+        //  creating variables for storing data from the response
         var cityName = response.name;
         var temp = response.main.temp;
         var humidity = response.main.humidity;
+        var wind = response.wind.speed
         var country = response.sys.country
+        var icon = response.weather[0].icon;
+        var iconTitle = response.weather[0].description;
 
-        // recreate this
-        // <h3 id="city-name"> Test City Name:</h3>
-        // <p id="temp">Test Temp :</p>
-        // <p id="humidity">Test Humidity: </p>
-        // <p id="us-index">Test UV Index: </p>
+        var $icon = $("<img>", {
+            src: "https://openweathermap.org/img/wn/" + icon + "@2x.png",
+            title: iconTitle,
+            alt: iconTitle,
+            height: "50px",
+            width: "50px",
+        })
+        
+
+        // creating all the ellements that make up the main weather display and giving them id and text
         var $cityName = $("<h3>", {
             id: "city-name",
             text: "City: " + cityName + ", " + country + " - " + month 
@@ -128,12 +197,18 @@ $(document).ready(function() {
             html: "Temperature: " + temp + '&#8451;',
         })
 
+        var $wind = $("<p>", {
+            id: "wind",
+            html: "Wind Speed: " + wind,
+        })
+
         var $humidity = $("<p>", {
             id: "humidity",
             text: "Humidity: " + humidity + "%",
         })
 
-        $("#main-weather").append($cityName, $temp, $humidity);
+        $("#main-weather").append($cityName, $temp, $humidity, $wind);
+        $temp.append($icon)
 
         // add this styling
         var $mainWeather = $("#main-weather");
@@ -142,18 +217,10 @@ $(document).ready(function() {
             "margin-top": "5px",
             "margin-bottom": "5px",
             padding: "10px",
-            border: "1px solid black",
+            border: "1px solid white",
             "border-radius": "5px",
 
         })
-        //recreate this styling 
-        // #main-weather {
-        //     margin-top: 5px;
-        //     margin-bottom: 5px;
-        //     padding: 10px;
-        //     border: solid 1px black;
-        //     border-radius: 5px;
-        // }
         
     }
 
@@ -170,14 +237,39 @@ $(document).ready(function() {
             url: fiveDayURL,
             method: "GET"
         }).then(function(response) {
-            console.log("this is fivedayURL response");
-            console.log(response);
+           
+           
+            // making the variable equal to the uvi from the searched city 
+            var uvi = response.daily[0].uvi;
 
             // create variable for uvi index
             var $uvi = $("<p>", {
                 id: "uvi-index",
-                text: "UVI: " + response.daily[0].uvi
+                text: "UVI: " + uvi
             })
+
+            // running checks on the uvi level and changing the background color depending on what level it is 
+            if (uvi <= 2) {
+                $uvi.css({
+                    "background-color": "green",
+                })
+            } else if ((uvi >= 3) && (uvi <= 5)) {
+                $uvi.css({
+                    "background-color": "yellow",
+                })
+            } else if ((uvi >= 6) && (uvi <= 7)) {
+                $uvi.css({
+                    "background-color": "orange",
+                })
+            } else if ((uvi >= 8) && (uvi <= 10)) {
+                $uvi.css({
+                    "background-color": "red",
+                })
+            } else {
+                $uvi.css({
+                    "background-color": "purple",
+                })
+            }
     
             $("#main-weather").append($uvi)
 
@@ -194,10 +286,12 @@ $(document).ready(function() {
             $("#five-day").append($newRow)
 
             for (var i =0; i < 5; i++) {
+                //  variable for changing the day 
                 var changingDay = moment().add((i+1),"days").format('MMMM Do')
-                console.log(changingDay)
+
+                // creating all the 5-day elements
                 var $newDiv = $("<div>", {
-                    class: "col-2",
+                    class: "col-2 forecast",
                     id: "day-" + (i+1)
                 })
 
@@ -209,38 +303,87 @@ $(document).ready(function() {
                     html: "Temprature: " + dailyArray[(i+1)].temp.day +  '&#8451;',
                 }) 
 
+                var icon = dailyArray[(i+1)].weather[0].icon;
+                var dayTitle = dailyArray[(i+1)].weather[0].description;
+
+                var $dayIcon = $("<img>", {
+                    src: "https://openweathermap.org/img/wn/" + icon + "@2x.png",
+                    title: dayTitle,
+                    alt: dayTitle,
+                    height: "50px",
+                    width: "50px",
+                })
+
                 var $dayHum = $("<p>", {
                     text: "Humidity: "+ dailyArray[(i+1)].humidity + "%",
                 })
 
                 $newRow.append($newDiv)
                 $newDiv.append($heading, $dayTemp, $dayHum)
+                $dayTemp.append($dayIcon)
             }
            
         })
 
-        //  recreate this  
-        // <!-- 5 Day Forcast -->
-        // <h3>Five Day Forecast: </h3>
-
-        // <div class="row">
-        //     <div class="col-2" id="day-1">
-        //         <h5>Stuff 1:</h5>
-        //     </div>
-        //     <div class="col-2" id="day-2">
-        //         <h5>Stuff 2:</h5>
-        //     </div>
-        //     <div class="col-2" id="day-3">
-        //         <h5>Stuff 3:</h5>
-        //     </div>
-        //     <div class="col-2" id="day-4">
-        //         <h5>Stuff 4:</h5>
-        //     </div>
-        //     <div class="col-2" id="day-5">
-        //         <h5>Stuff 5:</h5>
-        //     </div>
-        // </div>
     }
+    $("#search-container").on("click", ".search-contents", function() {
+        $redoSearch = $(this).text();
+        lastCitySearched = $redoSearch;
+        saveSearchFunction()
+
+        // delete after testing
+        console.log(lastCitySearched)
+
+         previousSearchWeather()
+    })
+
+    var saveSearchFunction = function() {
+        if (lastCitySearched === "") {
+            return
+        }
+        // console.log(lastCitySearched)
+        var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
+        
+        var searchHistory = {
+            city: lastCitySearched,
+        }
+
+        searches.push(searchHistory)
+        window.localStorage.setItem("searches", JSON.stringify(searches));
+    }
+
+    var loadOldSearch = function() {
+        var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
+        var iNum = searches.length - 1
+        var previousCity = searches[iNum].city
+ 
+
+        // create a new div and fill it with text from search
+        var $newDiv = $("<div>", {
+            class: "search-contents",
+            text: previousCity,
+        });
+    
+        // newdiv css
+        $($newDiv).css({
+            border: "white solid 1px",
+            padding: "10px",
+        })
+    
+        // append the new div
+        $("#search-container").prepend($newDiv)
+
+        //set value of $redoSearch
+        $redoSearch = previousCity
+
+        // run logWeatherFunction
+        previousSearchWeather();
+
+    }
+    
+
+    // run load oldSearches
+    loadOldSearch()
 
     $("#search-btn").on("click", createSearch);
     $("#city-search").on("keydown", checkForEnter);

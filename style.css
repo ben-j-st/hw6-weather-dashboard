@@ -1,37 +1,76 @@
+body {
+    background-color: #26D4D9;
+}
 .navbar {
     margin-top: 20px;
-    background-color: gray;
+    background-color: #267AD9;
     color: white;
-    text-align: center;
+    justify-content: center;
+    border: white 1px solid;
 }
 
 h3 {
     margin-top:5px;
 }
 #side-bar {
-    background-color: #F5F5F5;
+    margin-top: 5px;
+    background-color: #26D985;
+    border: white 1px solid;
+    border-radius: 5px;
+}
+#weather-gif {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
 }
 
 .hide {
     display:none;
 }
+#heading-row {
+    padding:10px;
+}
+
+#warning {
+    position: absolute;
+    right: 10px;
+    color: red;
+    font-weight: bold;
+}
 
 #city-name {
     margin-top: 5px;
 }
+
 #day-1 {
     margin-left: 30px;
     margin-right: 8px;
-    border: solid black 1px;
+    border: solid white 1px;
     border-radius: 5px;
+    background-color: #26D985;
+    color: white;
 }
 
  #day-2, #day-3, #day-4, #day-5 {
     margin-left: 8px;
     margin-right: 8px;
-    border: solid black 1px;
+    border: solid white 1px;
     border-radius: 5px;
+    background-color: #26D985;
+    color: white;
 }
+
+#uvi-index {
+    width: 100px;
+    color: white;
+}
+
+#main-weather {
+    position: relative;
+    background-color: #26D985;
+    color: white;
+}
+
 
 #search-container {
     margin-top: 20px;
