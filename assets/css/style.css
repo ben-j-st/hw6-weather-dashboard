@@ -1,5 +1,6 @@
 body {
     background-color: #26D4D9;
+    min-width: 576px;;
 }
 .navbar {
     margin-top: 20px;
@@ -17,6 +18,7 @@ h3 {
     background-color: #26D985;
     border: white 1px solid;
     border-radius: 5px;
+    padding-bottom: 5px;
 }
 #weather-gif {
     position: absolute;
@@ -43,7 +45,7 @@ h3 {
 }
 
 #day-1 {
-    margin-left: 30px;
+    margin-left: 25px;
     margin-right: 8px;
     border: solid white 1px;
     border-radius: 5px;
@@ -74,6 +76,14 @@ h3 {
 
 #search-container {
     margin-top: 20px;
+}
+
+.search-contents {
+    border-radius: 5px;
+}
+.search-contents:hover {
+    background-color: white;
+    opacity: 30%;
 }
 
 #clearBtn {

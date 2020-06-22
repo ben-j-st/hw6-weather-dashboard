@@ -292,7 +292,7 @@ $(document).ready(function() {
 
                 // creating all the 5-day elements
                 var $newDiv = $("<div>", {
-                    class: "col-2 forecast",
+                    class: "col-lg-2 forecast",
                     id: "day-" + (i+1)
                 })
 
