@@ -92,9 +92,8 @@ $(document).ready(function() {
             url: queryURL,
             method: "GET",
         }).then(function(response){
-            console.log(response)
             
-            gifWeather = response.weather[0].main
+            gifWeather = response.weather[0].description
 
             displayGif();
             //calling function to create fields for data
@@ -143,7 +142,7 @@ $(document).ready(function() {
             url: queryURL,
             method: "GET",
         }).then(function(response){
-            gifWeather = response.weather[0].main
+            gifWeather = response.weather[0].description
 
             displayGif()
 
