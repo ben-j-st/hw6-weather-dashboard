@@ -116,11 +116,8 @@ $(document).ready(function() {
             url: queryURL,
             method: "GET",
         }).then(function(response){
-            console.log(response)
             
             gifURL = response.data[0].images.fixed_height.url;
-
-            console.log(gifURL)
 
             var $img = $("<img>", {
                 id: "weather-gif",
@@ -146,20 +143,18 @@ $(document).ready(function() {
             url: queryURL,
             method: "GET",
         }).then(function(response){
-            
+            gifWeather = response.weather[0].main
+
             displayGif()
 
             //calling function to create fields for data
             mainWeatherDisplay(response);
             
             // function for making a second call to ajax to get day forecast using lat and lon from first ajax call
-            fiveDayDisplay(response);
-
-            
+            fiveDayDisplay(response);        
         })
 
         // used to empty the field after input 
-        
     }
 
     var checkForEnter = function() {
@@ -187,7 +182,7 @@ $(document).ready(function() {
         })
         
 
-        // creating all the ellements that make up the main weather display and giving them id and text
+        // creating all the elements that make up the main weather display and giving them id and text
         var $cityName = $("<h3>", {
             id: "city-name",
             text: "City: " + cityName + ", " + country + " - " + month 
@@ -301,7 +296,7 @@ $(document).ready(function() {
                 })
 
                 var $dayTemp = $("<p>", {
-                    html: "Temprature: " + dailyArray[(i+1)].temp.day +  '&#8451;',
+                    html: "Temperature: " + dailyArray[(i+1)].temp.day +  '&#8451;',
                 }) 
 
                 var icon = dailyArray[(i+1)].weather[0].icon;
@@ -354,37 +349,48 @@ $(document).ready(function() {
     }
 
     var loadOldSearch = function() {
-        var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
-        var iNum = searches.length - 1
-        var previousCity = searches[iNum].city
- 
+        
+        
+        if (window.localStorage.getItem("searches") === null) {
+            return
+            //...
+        } else {
+            var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
 
-        // create a new div and fill it with text from search
-        var $newDiv = $("<div>", {
-            class: "search-contents",
-            text: previousCity,
-        });
+            var iNum = searches.length - 1
+            var previousCity = searches[iNum].city
+     
     
-        // newdiv css
-        $($newDiv).css({
-            border: "white solid 1px",
-            padding: "10px",
-        })
+            // create a new div and fill it with text from search
+            var $newDiv = $("<div>", {
+                class: "search-contents",
+                text: previousCity,
+            });
+        
+            // newdiv css
+            $($newDiv).css({
+                border: "white solid 1px",
+                padding: "10px",
+            })
+        
+            // append the new div
+            $("#search-container").prepend($newDiv)
     
-        // append the new div
-        $("#search-container").prepend($newDiv)
-
-        //set value of $redoSearch
-        $redoSearch = previousCity
-
-        // run logWeatherFunction
-        previousSearchWeather();
-
+            //set value of $redoSearch
+            $redoSearch = previousCity
+    
+            // run logWeatherFunction
+            previousSearchWeather();
+        }
+       
     }
     
-
-    // run load oldSearches
+  
     loadOldSearch()
+ 
+    
+
+    
 
     $("#search-btn").on("click", createSearch);
     $("#city-search").on("keydown", checkForEnter);
