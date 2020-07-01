@@ -352,7 +352,6 @@ $(document).ready(function() {
         
         if (window.localStorage.getItem("searches") === null) {
             return
-            //...
         } else {
             var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
 
