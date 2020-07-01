@@ -354,7 +354,7 @@ $(document).ready(function() {
             return
         } else {
             var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
-
+            console.log(searches);
             var iNum = searches.length - 1
             var previousCity = searches[iNum].city
      
