@@ -343,43 +343,43 @@ $(document).ready(function() {
             city: lastCitySearched,
         }
 
-        searches.push(searchHistory)
+        searches.unshift(searchHistory)
         window.localStorage.setItem("searches", JSON.stringify(searches));
     }
 
     var loadOldSearch = function() {
+        //loads old storage
+        var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
+
+        // check if searches array is empty 
+        if (searches[0] === undefined) {
+            //stops code from running if empty
+            return;
+        } 
+        // runs if array is not empty
+        var previousCity = searches[0].city
         
-        
-        if (window.localStorage.getItem("searches") === null) {
-            return
-        } else {
-            var searches = JSON.parse(window.localStorage.getItem("searches")) || []; 
-            console.log(searches);
-            var iNum = searches.length - 1
-            var previousCity = searches[iNum].city
-     
+        // create a new div and fill it with text from search
+        var $newDiv = $("<div>", {
+            class: "search-contents",
+            text: previousCity,
+        });
     
-            // create a new div and fill it with text from search
-            var $newDiv = $("<div>", {
-                class: "search-contents",
-                text: previousCity,
-            });
-        
-            // newdiv css
-            $($newDiv).css({
-                border: "white solid 1px",
-                padding: "10px",
-            })
-        
-            // append the new div
-            $("#search-container").prepend($newDiv)
+        // newdiv css
+        $($newDiv).css({
+            border: "white solid 1px",
+            padding: "10px",
+        })
     
-            //set value of $redoSearch
-            $redoSearch = previousCity
+        // append the new div
+        $("#search-container").prepend($newDiv)
+
+        //set value of $redoSearch
+        $redoSearch = previousCity
+
+        // run logWeatherFunction
+        previousSearchWeather();
     
-            // run logWeatherFunction
-            previousSearchWeather();
-        }
        
     }
     
